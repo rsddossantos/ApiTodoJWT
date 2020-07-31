@@ -8,6 +8,7 @@ if (ENVIRONMENT=="development"){
     $config['host']='localhost';
     $config['dbuser']='root';
     $config['dbpass']='';
+    $config['jwt_secret_key'] = 'abC123!';
 } else{
     //entrar com os dados de um outro ambiente, como o de produção, por exemplo.
 }
