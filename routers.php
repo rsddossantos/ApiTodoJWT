@@ -2,9 +2,10 @@
 global $routes;
 $routes = array();
 
-$routes['/users/login'] = '/users/login';
-$routes['/users/new'] = '/users/new_record';
-$routes['/users/{id}'] = '/users/view/:id';
+//params
+$routes['/users/login'] = '/users/login'; //email;pass;
+$routes['/users/new'] = '/users/new_record'; //name;email;pass;
+$routes['/users/{id}'] = '/users/view/:id'; // jwt;
 $routes['/users/{id}/feed'] = '/users/feed/:id';
 $routes['/users/{id}/photos'] = '/users/photos/:id';
 $routes['/users/{id}/follow'] = '/users/follow/:id';
