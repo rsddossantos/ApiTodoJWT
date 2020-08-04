@@ -127,11 +127,13 @@ class Users extends Model
     {
         if($id === $this->getId()) {
             $toChange = array();
-            if(!empty($data['email']) && filter_var($data['email'], FILTER_VALIDATE_EMAIL)
-            && !$this->emailExists($data['email'])) {
-                $toChange['email'] = $data['email'];
-            } else {
-                return 'E-mail inválido ou já cadastrado!';
+            if(!empty($data['email'])) {
+                if (filter_var($data['email'], FILTER_VALIDATE_EMAIL)
+                    && !$this->emailExists($data['email'])) {
+                    $toChange['email'] = $data['email'];
+                } else {
+                    return 'E-mail inválido ou já cadastrado!';
+                }
             }
             if(!empty($data['name'])) {
                 $toChange['name'] = $data['name'];
