@@ -1,6 +1,6 @@
 <?php
 require 'environment.php';
-
+define("BASE_URL","http://localhost:8081/Devstagram/");
 global $config;
 $config= array();
 if (ENVIRONMENT=="development"){

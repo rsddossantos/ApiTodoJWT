@@ -68,10 +68,13 @@ class UsersController extends Controller
             }
             switch($method) {
                 case 'GET':
-
+                    $array['data'] = $users->getInfo($id);
+                    if(count($array['data']) === 0) {
+                        $array['error'] = 'Usuário não existe';
+                    }
                     break;
                 case 'PUT':
-
+                    $array['error'] = $users->editInfo($id, $data);
                     break;
                 case 'DELETE':
 
@@ -79,11 +82,7 @@ class UsersController extends Controller
                 default:
                     $array['error'] = 'Método '.$method.' não disponível';
                     break;
-
-
             }
-
-
         } else {
             $array['error'] = 'Acesso negado!';
         }
