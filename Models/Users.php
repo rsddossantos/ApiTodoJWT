@@ -128,11 +128,14 @@ class Users extends Model
         if($id === $this->getId()) {
             $toChange = array();
             if(!empty($data['email'])) {
-                if (filter_var($data['email'], FILTER_VALIDATE_EMAIL)
-                    && !$this->emailExists($data['email'])) {
-                    $toChange['email'] = $data['email'];
+                if (filter_var($data['email'], FILTER_VALIDATE_EMAIL)) {
+                    if (!$this->emailExists($data['email'])) {
+                        $toChange['email'] = $data['email'];
+                    } else {
+                        return 'E-mail já cadastrado!';
+                    }
                 } else {
-                    return 'E-mail inválido ou já cadastrado!';
+                    return 'E-mail inválido!';
                 }
             }
             if(!empty($data['name'])) {
@@ -142,13 +145,55 @@ class Users extends Model
                 $toChange['pass'] = password_hash($data['pass'], PASSWORD_DEFAULT);
             }
             if(count($toChange) > 0) {
-                return 'Anterando dados';
+                $fields = array();
+                foreach($toChange as $k => $v) {
+                    $fields[] = $k.' = :'.$k;
+                }
+                $sql = "UPDATE users SET ".implode(',', $fields)." WHERE id = :id";
+                $sql = $this->db->prepare($sql);
+                $sql->bindValue(':id', $id);
+                foreach($toChange as $k => $v) {
+                    $sql->bindValue(':'.$k, $v);
+                }
+                $sql->execute();
+                return 'dados alterados';
             } else {
                 return 'Preencha os dados corretamente!';
             }
         } else {
             return 'Não é permitido editar outro usuário';
         }
+    }
+
+    /*
+     * O ideal seria inativar o usuário mas como é uma aplicação de estudos foi resolvido excluir todas as dependências
+     * Fotos
+     * Comentários fotos
+     * Likes fotos
+     * Seguidores e seguidos
+     * Usuário
+     */
+    public function delete($id)
+    {
+        if($id === $this->getId()) {
+            $p = new Photos();
+            $p->deleteAll($id);
+
+            $sql = "DELETE FROM users_following WHERE id_user_active = :id OR id_user_passive = :id";
+            $sql = $this->db->prepare($sql);
+            $sql->bindValue(':id', $id);
+            $sql->execute();
+
+            $sql = "DELETE FROM users WHERE id = :id ";
+            $sql = $this->db->prepare($sql);
+            $sql->bindValue(':id', $id);
+            $sql->execute();
+
+            return '';
+        } else {
+            return 'Não é permitido excluir outro usuário';
+        }
+
     }
 
 
