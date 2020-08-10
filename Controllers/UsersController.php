@@ -89,5 +89,32 @@ class UsersController extends Controller
         $this->returnJson($array);
     }
 
+    // O feed será sempre a coleta do usuário que está logado, usando somente método GET
+    public function feed()
+    {
+        $array = array('error'=>'', 'logged' => false);
+        $method = $this->getMethod();
+        $data = $this->getRequestData();
+        $users = new Users();
+        if(!empty($data['jwt']) && $users->validateJwt($data['jwt'])) {
+            $array['logged'] = true;
+            if($method == 'GET') {
+                $offset = 0;
+                if(!empty($data['offset'])) {
+                    $offset = intval($data['offset']);
+                }
+                $per_page = 10;
+                if(!empty($data['per_page'])) {
+                    $per_page = intval($data['per_page']);
+                }
+                $array['data'] = $users->getFeed($offset, $per_page);
+            } else{
+                $array['error'] = 'Método '.$method.' não disponível';
+            }
+        } else {
+            $array['error'] = 'Acesso negado!';
+        }
+        $this->returnJson($array);
+    }
 
 }

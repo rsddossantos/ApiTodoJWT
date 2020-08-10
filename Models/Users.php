@@ -73,6 +73,34 @@ class Users extends Model
         return $array;
     }
 
+    public function getFeed($offset = 0, $per_page = 10)
+    {
+        /*
+         * 1-) Coletando os seguidores
+         * 2-) Lista das últimas fotos desses seguidores
+         */
+        $followingUsers = $this->getFollowing($this->getId());
+        $p = new Photos();
+
+        return $p->getFeedCollection($followingUsers, $offset, $per_page);
+    }
+
+    public function getFollowing($id_user) {
+        $array = array();
+
+        $sql = "SELECT id_user_passive FROM users_following WHERE id_user_active = :id";
+        $sql = $this->db->prepare($sql);
+        $sql->bindValue(':id', $id_user);
+        $sql->execute();
+        if($sql->rowCount() > 0) {
+            $data = $sql->fetchAll();
+            foreach($data as $item) {
+                $array[] = intval($item['id_user_passive']);
+            }
+        }
+        return $array;
+    }
+
     public function getFollowingCount($id_user)
     {
         $sql = "SELECT COUNT(*) as c FROM users_following WHERE id_user_active = :id";
